@@ -1,8 +1,11 @@
 <template>
-  <div></div>
+  <div>
+    <popup :position='positiondata' :popcontent="this.popupContent" :mapId="this.mapId"></popup>
+  </div>
 </template>
 <script>
 import * as turf from "@turf/turf";
+import popup from '../popup/popup.vue';
 export default {
   name: "geojsonviewer",
   props: {
@@ -27,6 +30,13 @@ export default {
       layername: "route",
       popups: {
         tools: null
+      },
+      positiondata:{
+        lat:0,
+        lng:0
+      },
+      popupContent:{
+
       }
     };
   },
@@ -57,27 +67,15 @@ export default {
         //   console.log(e.features[0].properties.id);
         this.activeid = e.features[0].properties.id;
         this.active_with_id(this.activeid);
-        this.popups.tools = new window.mapboxgl.Popup({})
-          .setLngLat(e.lngLat)
-          .setHTML(
-            `<div class="popupContent">
-                <ul class="tools">
-                    <li><span class="fa-edit" onclick="hello"></span>编辑</li>
-                    <li><span class="fa-bicycle"></span>监视</li>
-                </ul>
-            </div>`
-          )
-          .setMaxWidth("300px")
-          .addTo(this.gMap);
-
-        window.$(".fa-edit").click(function() {
-          console.log("aaa");
-        });
+        this.positiondata=e.lngLat;
       }.bind(this)
     );
   },
   mounted() {
     this.handleData(this.datas);
+  },
+  components:{
+    popup
   },
   beforeUnmount() {
     if (this.gMap.getLayer(this.layername)) this.gMap.removeLayer("state-data");
